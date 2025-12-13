@@ -1,0 +1,37 @@
+# 1. Очистить и собрать
+cd /Users/basilex/Projects/brickstore
+pkill -9 -f "java" 2>/dev/null || true
+./gradlew clean build -x test
+
+# 2. Запустить приложение
+./gradlew bootRun &
+sleep 30
+
+# 3. Тесты
+# GET - список стран (пусто)
+curl -s http://localhost:8081/api/v1/countries | jq '.'
+
+# POST - создать страну
+curl -s -X POST http://localhost:8081/api/v1/countries \
+  -H "Content-Type: application/json" \
+  -d '{"name":"United States","iso2":"US","iso3":"USA","code":840}' | jq '.'
+
+# GET - получить созданную страну (используя pid из ответа)
+curl -s http://localhost:8081/api/v1/countries/{pid} | jq '.'
+
+# GET - список валют
+curl -s http://localhost:8081/api/v1/currencies | jq '.'
+
+# POST - создать валюту
+curl -s -X POST http://localhost:8081/api/v1/currencies \
+  -H "Content-Type: application/json" \
+  -d '{"name":"US Dollar","iso3":"USD","code":840,"symbol":"$"}' | jq '.'
+
+# POST - связать валюту со страной
+curl -s -X POST http://localhost:8081/api/v1/countries/{countryPid}/currencies/{currencyPid} | jq '.'
+
+# GET - проверить что pid есть, id нет
+curl -s http://localhost:8081/api/v1/countries | jq '.data[0]'
+
+# GET - несуществующая страна (должен быть 404)
+curl -s -w "\nHTTP Status: %{http_code}\n" http://localhost:8081/api/v1/countries/invalid-pid
