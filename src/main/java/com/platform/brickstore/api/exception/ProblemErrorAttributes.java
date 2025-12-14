@@ -32,8 +32,9 @@ public class ProblemErrorAttributes implements ErrorAttributes {
 
         attrs.put("timestamp", Instant.now().toString());
         attrs.put("status", status);
-        // RFC7807 'type' - keep as about:blank for now
-        attrs.put("type", "about:blank");
+        // RFC7807 'type' - default to about:blank; may be overridden below for domain errors
+        String type = "about:blank";
+        attrs.put("type", type);
         attrs.put("error", req.getAttribute(RequestDispatcher.ERROR_MESSAGE) != null ? String.valueOf(req.getAttribute(RequestDispatcher.ERROR_MESSAGE)) : org.springframework.http.HttpStatus.resolve(status) != null ? org.springframework.http.HttpStatus.resolve(status).getReasonPhrase() : "Error");
 
         Throwable ex = getError(webRequest);
@@ -57,6 +58,15 @@ public class ProblemErrorAttributes implements ErrorAttributes {
             Map<String, String> details = Map.of("errorCode", nf.getErrorCode());
             attrs.put("details", details);
             attrs.put("errorCode", nf.getErrorCode());
+            // map known errorCode to a domain-specific problem type URI, e.g. COUNTRY_NOT_FOUND -> /problems/country-not-found
+            try {
+                String ec = nf.getErrorCode();
+                if (ec != null && !ec.isBlank()) {
+                    String candidate = "/problems/" + ec.toLowerCase().replace('_', '-');
+                    attrs.put("type", candidate);
+                }
+            } catch (Exception ignore) {
+            }
         }
 
         return attrs;
