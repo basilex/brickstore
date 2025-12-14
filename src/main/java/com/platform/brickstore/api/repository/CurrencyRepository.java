@@ -104,9 +104,7 @@ public class CurrencyRepository {
      */
     public Optional<Currency> findById(String id) {
         return jdbcClient.sql(SQL_FIND_BY_ID)
-            .param(id)
-            .query(Currency.class)
-            .optional();
+            .param(id).query(Currency.class).optional();
     }
 
     /**
@@ -114,9 +112,7 @@ public class CurrencyRepository {
      */
     public Optional<Currency> findByIso3(String iso3) {
         return jdbcClient.sql(SQL_FIND_BY_ISO3)
-            .param(iso3)
-            .query(Currency.class)
-            .optional();
+            .param(iso3).query(Currency.class).optional();
     }
 
     /**
@@ -124,9 +120,7 @@ public class CurrencyRepository {
      */
     public Optional<Currency> findByPid(String pid) {
         return jdbcClient.sql(SQL_FIND_BY_PID)
-            .param(pid)
-            .query(Currency.class)
-            .optional();
+            .param(pid).query(Currency.class).optional();
     }
 
     /**
@@ -134,9 +128,7 @@ public class CurrencyRepository {
      */
     public Optional<Currency> findByName(String name) {
         return jdbcClient.sql(SQL_FIND_BY_NAME)
-            .param(name)
-            .query(Currency.class)
-            .optional();
+            .param(name).query(Currency.class).optional();
     }
 
     /**
@@ -144,8 +136,7 @@ public class CurrencyRepository {
      */
     public List<Currency> findAll() {
         return jdbcClient.sql(SQL_FIND_ALL)
-            .query(Currency.class)
-            .list();
+            .query(Currency.class).list();
     }
 
     /**
@@ -165,8 +156,7 @@ public class CurrencyRepository {
      */
     public long count() {
         Long result = jdbcClient.sql(SQL_COUNT)
-            .query(Long.class)
-            .single();
+            .query(Long.class).single();
         return result != null ? result : 0;
     }
 
@@ -208,8 +198,7 @@ public class CurrencyRepository {
      */
     public void deleteById(String id) {
         jdbcClient.sql(SQL_DELETE)
-            .param(id)
-            .update();
+            .param(id).update();
     }
 
     /**

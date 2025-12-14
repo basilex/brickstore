@@ -62,7 +62,7 @@ public class CountryRepository {
 
     private static final String SQL_UPDATE = """
         UPDATE country SET pid = ?, name = ?, iso2 = ?, iso3 = ?, code = ?, updated_at = ?
-          WHERE id = ?
+         WHERE id = ?
     """;
 
     private static final String SQL_DELETE = "DELETE FROM country WHERE id = ?";
@@ -73,7 +73,7 @@ public class CountryRepository {
         SELECT cur.id, cur.pid, cur.name, cur.iso3, cur.code, cur.symbol, cur.created_at, cur.updated_at
           FROM currency cur
           JOIN country_currency cc ON cur.id = cc.currency_id
-          WHERE cc.country_id = ? ORDER BY cur.name
+         WHERE cc.country_id = ? ORDER BY cur.name
     """;
 
     private static final String SQL_FIND_CURRENCIES_BY_COUNTRY_PID = """
@@ -81,7 +81,7 @@ public class CountryRepository {
           FROM currency cur
           JOIN country_currency cc ON cur.id = cc.currency_id
           JOIN country c ON c.id = cc.country_id
-          WHERE c.pid = ? ORDER BY cur.name
+         WHERE c.pid = ? ORDER BY cur.name
     """;
 
     private static final String SQL_FIND_CURRENCIES_BY_COUNTRY_ISO2 = """
@@ -89,7 +89,7 @@ public class CountryRepository {
           FROM currency cur
           JOIN country_currency cc ON cur.id = cc.currency_id
           JOIN country c ON c.id = cc.country_id
-          WHERE c.iso2 = ? ORDER BY cur.name
+         WHERE c.iso2 = ? ORDER BY cur.name
     """;
 
     private static final String SQL_ADD_CURRENCY = """
@@ -99,7 +99,8 @@ public class CountryRepository {
     """;
 
     private static final String SQL_REMOVE_CURRENCY = """
-        DELETE FROM country_currency WHERE country_id = ? AND currency_id = ?
+        DELETE FROM country_currency
+         WHERE country_id = ? AND currency_id = ?
     """;
 
     private final JdbcClient jdbcClient;

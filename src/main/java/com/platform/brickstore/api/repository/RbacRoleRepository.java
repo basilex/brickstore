@@ -23,11 +23,13 @@ public class RbacRoleRepository {
     private static final String SQL_DELETE = "DELETE FROM rbac_role WHERE pid = ?";
 
     public Optional<RbacRole> findByPid(String pid) {
-        return jdbcClient.sql(SQL_FIND_BY_PID).param(pid).query(RbacRole.class).optional();
+        return jdbcClient.sql(SQL_FIND_BY_PID).param(pid)
+            .query(RbacRole.class).optional();
     }
 
     public Optional<RbacRole> findByName(String name) {
-        return jdbcClient.sql(SQL_FIND_BY_NAME).param(name).query(RbacRole.class).optional();
+        return jdbcClient.sql(SQL_FIND_BY_NAME).param(name)
+            .query(RbacRole.class).optional();
     }
 
     public List<RbacRole> findAll() {
@@ -36,13 +38,21 @@ public class RbacRoleRepository {
 
     public void save(RbacRole role) {
         jdbcClient.sql(SQL_INSERT)
-            .params(role.getId(), role.getPid(), role.getName(), role.getDescription(), role.getCreatedAt(), role.getUpdatedAt())
+            .params(role.getId()) 
+            .params(role.getPid())
+            .params(role.getName())
+            .params(role.getDescription())
+            .params(role.getCreatedAt())
+            .params(role.getUpdatedAt())
             .update();
     }
 
     public void update(RbacRole role) {
         jdbcClient.sql(SQL_UPDATE)
-            .params(role.getName(), role.getDescription(), role.getUpdatedAt(), role.getPid())
+            .params(role.getName())
+            .params(role.getDescription())
+            .params(role.getUpdatedAt())
+            .params(role.getPid())
             .update();
     }
 
