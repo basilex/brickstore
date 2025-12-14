@@ -48,6 +48,7 @@ import com.platform.brickstore.api.utility.UUIDv7;
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 @DisplayName("CountryController Tests")
+@SuppressWarnings("null")
 class CountryControllerTest {
 
     @Autowired
