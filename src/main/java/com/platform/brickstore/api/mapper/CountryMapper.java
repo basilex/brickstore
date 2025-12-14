@@ -1,5 +1,6 @@
 package com.platform.brickstore.api.mapper;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,6 +16,8 @@ import com.platform.brickstore.api.dto.CountryResponse;
  */
 @Component
 public class CountryMapper {
+
+    private static final DateTimeFormatter ISO = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
     private final CurrencyMapper currencyMapper;
 
@@ -45,8 +48,8 @@ public class CountryMapper {
             entity.getIso3(),
             entity.getCode(),
             null,
-            entity.getCreatedAt(),
-            entity.getUpdatedAt()
+            (entity.getCreatedAt() != null ? entity.getCreatedAt().format(ISO) : null),
+            (entity.getUpdatedAt() != null ? entity.getUpdatedAt().format(ISO) : null)
         );
     }
 
@@ -63,8 +66,8 @@ public class CountryMapper {
             currencies == null ? null : currencies.stream()
                 .map(currencyMapper::toResponse)
                 .collect(Collectors.toList()),
-            entity.getCreatedAt(),
-            entity.getUpdatedAt()
+            (entity.getCreatedAt() != null ? entity.getCreatedAt().format(ISO) : null),
+            (entity.getUpdatedAt() != null ? entity.getUpdatedAt().format(ISO) : null)
         );
     }
 

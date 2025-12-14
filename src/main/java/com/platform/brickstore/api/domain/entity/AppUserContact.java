@@ -6,6 +6,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,26 +21,27 @@ import lombok.NoArgsConstructor;
 public class AppUserContact {
     @Id
     @Column("id")
-    String id;
+    @JsonIgnore
+    private String id;
 
     @Column("pid")
-    String pid;
+    private String pid;
 
     @Column("user_id")
-    String userId;
+    private String userId;
 
     @Column("type")
-    String type;
+    private String type;
 
     @Column("value")
-    String value;
+    private String value;
 
     @Column("verified")
-    Boolean verified;
+    private Boolean verified;
 
     @Column("created_at")
-    LocalDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @Column("updated_at")
-    LocalDateTime updatedAt;
+    private LocalDateTime updatedAt;
 }

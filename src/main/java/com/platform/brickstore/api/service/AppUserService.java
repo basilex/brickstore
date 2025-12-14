@@ -40,6 +40,9 @@ public class AppUserService {
         if (appUserRepository.existsByUsername(username)) {
             throw new DuplicateKeyException("Username already exists: " + username);
         }
+        if (password == null || password.isBlank()) {
+            throw new IllegalArgumentException("Password must be provided");
+        }
         var now = LocalDateTime.now();
         var hashed = passwordEncoder.encode(password);
         var user = AppUser.builder()

@@ -1,5 +1,6 @@
 package com.platform.brickstore.api.mapper;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,11 +12,10 @@ import com.platform.brickstore.api.dto.CountrySimpleResponse;
 import com.platform.brickstore.api.dto.CurrencyRequest;
 import com.platform.brickstore.api.dto.CurrencyResponse;
 
-/**
- * Mapper for converting between Currency entity and DTOs.
- */
 @Component
 public class CurrencyMapper {
+
+    private static final DateTimeFormatter ISO = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
     /**
      * Convert CurrencyRequest DTO to Currency entity.
@@ -39,8 +39,8 @@ public class CurrencyMapper {
             entity.getIso3(),
             entity.getCode(),
             entity.getSymbol(),
-            entity.getCreatedAt(),
-            entity.getUpdatedAt(),
+            (entity.getCreatedAt() != null ? entity.getCreatedAt().format(ISO) : null),
+            (entity.getUpdatedAt() != null ? entity.getUpdatedAt().format(ISO) : null),
             null
         );
     }
@@ -57,19 +57,19 @@ public class CurrencyMapper {
                 c.getIso2(),
                 c.getIso3(),
                 c.getCode(),
-                c.getCreatedAt(),
-                c.getUpdatedAt()
+                (c.getCreatedAt() != null ? c.getCreatedAt().format(ISO) : null),
+                (c.getUpdatedAt() != null ? c.getUpdatedAt().format(ISO) : null)
             ))
             .collect(Collectors.toList());
-        
+
         return new CurrencyResponse(
             entity.getPid(),
             entity.getName(),
             entity.getIso3(),
             entity.getCode(),
             entity.getSymbol(),
-            entity.getCreatedAt(),
-            entity.getUpdatedAt(),
+            (entity.getCreatedAt() != null ? entity.getCreatedAt().format(ISO) : null),
+            (entity.getUpdatedAt() != null ? entity.getUpdatedAt().format(ISO) : null),
             countryResponses
         );
     }

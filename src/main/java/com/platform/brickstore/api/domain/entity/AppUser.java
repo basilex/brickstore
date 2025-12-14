@@ -6,6 +6,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -22,28 +24,29 @@ public class AppUser {
     @Id
     @Column("id")
     @NotBlank
-    String id;
+    @JsonIgnore
+    private String id;
 
     @Column("pid")
     @NotBlank
-    String pid;
+    private String pid;
 
     @Column("username")
     @NotBlank
     @Size(max = 64)
-    String username;
+    private String username;
 
     @Column("password")
     @NotBlank
     @Size(max = 255)
-    String password;
+    private String password;
 
     @Column("enabled")
-    Boolean enabled;
+    private Boolean enabled;
 
     @Column("created_at")
-    LocalDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @Column("updated_at")
-    LocalDateTime updatedAt;
+    private LocalDateTime updatedAt;
 }
