@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
 
+import com.platform.brickstore.api.exception.ErrorCode;
 import com.platform.brickstore.api.exception.NotFoundException;
 import com.platform.brickstore.api.repository.AppUserRepository;
 import com.platform.brickstore.api.repository.RbacRoleRepository;
@@ -21,16 +22,16 @@ public class UserRoleService {
     public void assignRoleByPid(String userPid, String rolePid) {
         var userIdOpt = appUserRepository.findIdByPid(userPid);
         var roleIdOpt = rbacRoleRepository.findIdByPid(rolePid);
-        var userId = userIdOpt.orElseThrow(() -> new NotFoundException("User not found: " + userPid, null));
-        var roleId = roleIdOpt.orElseThrow(() -> new NotFoundException("Role not found: " + rolePid, null));
+        var userId = userIdOpt.orElseThrow(() -> new NotFoundException("User not found: " + userPid, ErrorCode.USER_NOT_FOUND));
+        var roleId = roleIdOpt.orElseThrow(() -> new NotFoundException("Role not found: " + rolePid, ErrorCode.ROLE_NOT_FOUND));
         rbacUserRoleRepository.assignRole(userId, roleId, LocalDateTime.now());
     }
 
     public void removeRoleByPid(String userPid, String rolePid) {
         var userIdOpt = appUserRepository.findIdByPid(userPid);
         var roleIdOpt = rbacRoleRepository.findIdByPid(rolePid);
-        var userId = userIdOpt.orElseThrow(() -> new NotFoundException("User not found: " + userPid, null));
-        var roleId = roleIdOpt.orElseThrow(() -> new NotFoundException("Role not found: " + rolePid, null));
+        var userId = userIdOpt.orElseThrow(() -> new NotFoundException("User not found: " + userPid, ErrorCode.USER_NOT_FOUND));
+        var roleId = roleIdOpt.orElseThrow(() -> new NotFoundException("Role not found: " + rolePid, ErrorCode.ROLE_NOT_FOUND));
         rbacUserRoleRepository.removeRole(userId, roleId);
     }
 }

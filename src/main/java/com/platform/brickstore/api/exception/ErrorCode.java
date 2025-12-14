@@ -18,6 +18,10 @@ public final class ErrorCode {
     public static final String ROLE_NOT_FOUND = "ROLE_NOT_FOUND";
     public static final String ROLE_DUPLICATE = "ROLE_DUPLICATE";
 
+    // User errors
+    public static final String USER_NOT_FOUND = "USER_NOT_FOUND";
+    public static final String USER_DUPLICATE = "USER_DUPLICATE";
+
     // Validation errors
     public static final String INVALID_REQUEST = "INVALID_REQUEST";
 
