@@ -1,8 +1,8 @@
 package com.platform.brickstore.api.controller;
 
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
@@ -19,9 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Collection;
 
-import org.hamcrest.Matcher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -102,7 +100,7 @@ class CountryControllerTest {
         mockMvc.perform(get("/api/v1/countries"))
             .andExpect(status().isOk())
             .andExpectAll(
-                jsonPath("$", (Matcher<? super Collection<?>>) hasSize(2)),
+                jsonPath("$", hasSize(2)),
                 jsonPath("$[0].pid", notNullValue()),
                 jsonPath("$[0].name", is("United States")),
                 jsonPath("$[1].name", is("Canada"))
