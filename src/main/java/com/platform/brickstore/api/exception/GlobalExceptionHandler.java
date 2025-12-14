@@ -28,6 +28,10 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
@@ -88,6 +92,10 @@ public class GlobalExceptionHandler {
      * Handle validation errors.
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ApiResponses({
+        @ApiResponse(responseCode = "400", description = "Validation error",
+            content = @Content(mediaType = "application/problem+json", schema = @Schema(ref = "#/components/schemas/ProblemDetail")))
+    })
     public ResponseEntity<ProblemDetail> handleValidationException(
             MethodArgumentNotValidException ex,
             WebRequest request
@@ -183,6 +191,10 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(NotFoundException.class)
+    @ApiResponses({
+        @ApiResponse(responseCode = "404", description = "Not Found",
+            content = @Content(mediaType = "application/problem+json", schema = @Schema(ref = "#/components/schemas/ProblemDetail")))
+    })
     public ResponseEntity<ProblemDetail> handleNotFound(NotFoundException ex, WebRequest request) {
         Map<String, String> details = new HashMap<>();
         details.put("errorCode", ex.getErrorCode());
@@ -210,6 +222,10 @@ public class GlobalExceptionHandler {
      * Handle general exceptions.
      */
     @ExceptionHandler(Exception.class)
+    @ApiResponses({
+        @ApiResponse(responseCode = "500", description = "Internal server error",
+            content = @Content(mediaType = "application/problem+json", schema = @Schema(ref = "#/components/schemas/ProblemDetail")))
+    })
     public ResponseEntity<ProblemDetail> handleGeneralException(
             Exception ex,
             WebRequest request
@@ -227,8 +243,8 @@ public class GlobalExceptionHandler {
             return new ResponseEntity<>(pd, HttpStatus.UNAUTHORIZED);
         }
 
-        // Fallback: internal server error
-        log.warn("{}: {}", ex.getClass().getName(), ex.getMessage());
+        // Fallback: internal server error — log full stacktrace for diagnostics
+        log.error("Unhandled exception during request dispatch", ex);
         ProblemDetail pd = buildProblem(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", "An unexpected error occurred", null);
         attachInstanceAndRequestId(pd, request);
 
