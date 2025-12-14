@@ -42,7 +42,7 @@ public class CountryController {
      * GET /api/v1/countries
      */
     @GetMapping
-    public ResponseEntity<List<CountryResponse>> getAll(
+    public ResponseEntity<List<CountryResponse>> getAllPaginated(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
     ) {

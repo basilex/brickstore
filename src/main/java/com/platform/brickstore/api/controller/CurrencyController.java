@@ -42,7 +42,7 @@ public class CurrencyController {
      * GET /api/v1/currencies
      */
     @GetMapping
-    public ResponseEntity<List<CurrencyResponse>> getAll(
+    public ResponseEntity<List<CurrencyResponse>> getPaginated(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
     ) {

@@ -67,9 +67,9 @@ public class CountryService {
     /**
      * Get all countries.
      */
-    public List<Country> getAll() {
-        return countryRepository.findAll();
-    }
+    // public List<Country> getAll() {
+    //     return countryRepository.findAll();
+    // }
 
     /**
      * Get all countries with pagination.

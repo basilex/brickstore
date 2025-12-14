@@ -158,11 +158,11 @@ public class CountryRepository {
     /**
      * Get all countries.
      */
-    public List<Country> findAll() {
-        return jdbcClient.sql(SQL_FIND_ALL)
-            .query(Country.class)
-            .list();
-    }
+    // public List<Country> findAll() {
+    //     return jdbcClient.sql(SQL_FIND_ALL)
+    //         .query(Country.class)
+    //         .list();
+    // }
 
     /**
      * Get all countries with pagination.

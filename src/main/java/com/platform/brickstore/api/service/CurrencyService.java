@@ -59,9 +59,9 @@ public class CurrencyService {
     /**
      * Get all currencies.
      */
-    public List<Currency> getAll() {
-        return currencyRepository.findAll();
-    }
+    // public List<Currency> getAll() {
+    //     return currencyRepository.findAll();
+    // }
 
     /**
      * Get all currencies with pagination.

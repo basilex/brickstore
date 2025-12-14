@@ -50,14 +50,11 @@ create trigger currency_updated_at_tg
 --
 create table country_currency (
     id          varchar(64)  not null,
-    pid         varchar(64)  not null,
     country_id  varchar(64)  not null,
     currency_id varchar(64)  not null,
     created_at  timestamp    not null default timezone('utc', now()),
 
     constraint country_currency_pk primary key (id),
-
-    constraint country_currency_pid_ux unique (pid),
     constraint country_currency_pair_ux unique (country_id, currency_id),
 
     constraint country_currency_country_id_fk
@@ -751,9 +748,9 @@ begin
     select id into v_currency_id from currency c where c.iso3 = rec.currency_iso3;
 
     insert into country_currency (
-      id, pid, country_id, currency_id
+      id, country_id, currency_id
     ) values (
-      uuidv7(), uuidv7(), v_country_id, v_currency_id
+      uuidv7(), v_country_id, v_currency_id
     );
   end loop;
 end;
