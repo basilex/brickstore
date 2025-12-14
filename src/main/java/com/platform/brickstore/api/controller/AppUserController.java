@@ -44,7 +44,7 @@ public class AppUserController {
 
     @PostMapping
     public ResponseEntity<Void> create(@Valid @RequestBody AppUserRequest request) {
-        appUserService.create(request.getUsername(), request.getPassword(), true);
+        appUserService.create(request.username(), request.password(), true);
         // Return 201 Created with Location header pointing to the created resource by pid
         // Note: service currently generates the pid internally; we could return it if service
         // exposed the created pid. For now return 201 without body.
@@ -53,7 +53,7 @@ public class AppUserController {
 
     @PutMapping("/{pid}")
     public ResponseEntity<Void> update(@PathVariable String pid, @Valid @RequestBody AppUserRequest request) {
-        appUserService.updateByPid(pid, request.getUsername(), request.getPassword(), true);
+        appUserService.updateByPid(pid, request.username(), request.password(), true);
         return ResponseEntity.ok().build();
     }
 

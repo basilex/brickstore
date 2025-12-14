@@ -39,13 +39,13 @@ public class RbacRoleController {
 
     @PostMapping
     public ResponseEntity<Void> create(@Valid @RequestBody RbacRoleRequest request) {
-        rbacRoleService.create(request.getName(), request.getDescription());
+        rbacRoleService.create(request.name(), request.description());
         return ResponseEntity.ok().build();
     }
 
     @PutMapping("/{pid}")
     public ResponseEntity<Void> update(@PathVariable String pid, @Valid @RequestBody RbacRoleRequest request) {
-        rbacRoleService.updateByPid(pid, request.getName(), request.getDescription());
+        rbacRoleService.updateByPid(pid, request.name(), request.description());
         return ResponseEntity.ok().build();
     }
 
