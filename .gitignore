@@ -26,3 +26,26 @@ replay_pid*
 build/
 out/
 
+# Gradle cache and wrapper
+/.gradle/
+/.gradle/*
+
+# IDE files
+.idea/
+*.iml
+
+# Temporary files
+/tmp/
+*.tmp
+
+# macOS
+.DS_Store
+
+# Logs and reports
+build/reports/
+build/tmp/
+
+# Ignore transpiled/compiled resources
+**/build/
+
+
