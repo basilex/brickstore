@@ -1,6 +1,7 @@
 package com.platform.brickstore.api.exception;
 
-import java.time.LocalDateTime;
+import java.net.URI;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,6 +11,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
@@ -24,34 +26,37 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import jakarta.validation.ConstraintViolationException;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
- * Global exception handler for REST API.
+ * Global exception handler for REST API using RFC7807 ProblemDetail.
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(NoResourceFoundException.class)
-    public ResponseEntity<ApiError> handleNoResourceFound(NoResourceFoundException ex, WebRequest request) {
-        ApiError apiError = ApiError.builder()
-            .timestamp(LocalDateTime.now())
-            .status(HttpStatus.NOT_FOUND.value())
-            .error("Resource Not Found")
-            .message(ex.getMessage())
-            .build();
-        return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    private ProblemDetail buildProblem(HttpStatus status, String title, String detail, Map<String, String> extra) {
+        ProblemDetail pd = ProblemDetail.forStatus(status);
+        pd.setTitle(title);
+        pd.setDetail(detail);
+        pd.setType(URI.create("about:blank"));
+        pd.setProperty("timestamp", Instant.now().toString());
+        if (extra != null && !extra.isEmpty()) {
+            pd.setProperty("errors", extra);
+        }
+        return pd;
     }
 
-    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ProblemDetail> handleNoResourceFound(NoResourceFoundException ex, WebRequest request) {
+        ProblemDetail pd = buildProblem(HttpStatus.NOT_FOUND, "Resource Not Found", ex.getMessage(), null);
+        return new ResponseEntity<>(pd, HttpStatus.NOT_FOUND);
+    }
 
     /**
      * Handle validation errors.
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiError> handleValidationException(
+    public ResponseEntity<ProblemDetail> handleValidationException(
             MethodArgumentNotValidException ex,
             WebRequest request
     ) {
@@ -59,213 +64,127 @@ public class GlobalExceptionHandler {
         ex.getBindingResult().getFieldErrors().forEach(error ->
             errors.put(error.getField(), error.getDefaultMessage())
         );
-
-        ApiError apiError = ApiError.builder()
-            .timestamp(LocalDateTime.now())
-            .status(HttpStatus.BAD_REQUEST.value())
-            .error("Validation Error")
-            .message("Invalid input parameters")
-            .details(errors)
-            .build();
-
-        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+        ProblemDetail pd = buildProblem(HttpStatus.BAD_REQUEST, "Validation Error", "Invalid input parameters", errors);
+        return new ResponseEntity<>(pd, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ApiError> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, WebRequest request) {
+    public ResponseEntity<ProblemDetail> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, WebRequest request) {
         log.debug("Malformed JSON request", ex);
-        ApiError apiError = ApiError.builder()
-            .timestamp(LocalDateTime.now())
-            .status(HttpStatus.BAD_REQUEST.value())
-            .error("Bad Request")
-            .message("Malformed JSON request")
-            .build();
-        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+        ProblemDetail pd = buildProblem(HttpStatus.BAD_REQUEST, "Bad Request", "Malformed JSON request", null);
+        return new ResponseEntity<>(pd, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ApiError> handleConstraintViolation(ConstraintViolationException ex, WebRequest request) {
+    public ResponseEntity<ProblemDetail> handleConstraintViolation(ConstraintViolationException ex, WebRequest request) {
         Map<String, String> errors = new HashMap<>();
         ex.getConstraintViolations().forEach(cv ->
             errors.put(cv.getPropertyPath().toString(), cv.getMessage())
         );
-        ApiError apiError = ApiError.builder()
-            .timestamp(LocalDateTime.now())
-            .status(HttpStatus.BAD_REQUEST.value())
-            .error("Validation Error")
-            .message("Constraint violations")
-            .details(errors)
-            .build();
-        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+        ProblemDetail pd = buildProblem(HttpStatus.BAD_REQUEST, "Validation Error", "Constraint violations", errors);
+        return new ResponseEntity<>(pd, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ApiError> handleTypeMismatch(MethodArgumentTypeMismatchException ex, WebRequest request) {
+    public ResponseEntity<ProblemDetail> handleTypeMismatch(MethodArgumentTypeMismatchException ex, WebRequest request) {
         Map<String, String> details = new HashMap<>();
         details.put(ex.getName(), "Invalid value: " + ex.getValue());
-        ApiError apiError = ApiError.builder()
-            .timestamp(LocalDateTime.now())
-            .status(HttpStatus.BAD_REQUEST.value())
-            .error("Bad Request")
-            .message("Method argument type mismatch")
-            .details(details)
-            .build();
-        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+        ProblemDetail pd = buildProblem(HttpStatus.BAD_REQUEST, "Bad Request", "Method argument type mismatch", details);
+        return new ResponseEntity<>(pd, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<ApiError> handleMissingParams(MissingServletRequestParameterException ex, WebRequest request) {
+    public ResponseEntity<ProblemDetail> handleMissingParams(MissingServletRequestParameterException ex, WebRequest request) {
         Map<String, String> details = new HashMap<>();
         details.put(ex.getParameterName(), "Parameter is missing");
-        ApiError apiError = ApiError.builder()
-            .timestamp(LocalDateTime.now())
-            .status(HttpStatus.BAD_REQUEST.value())
-            .error("Bad Request")
-            .message("Missing request parameter")
-            .details(details)
-            .build();
-        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+        ProblemDetail pd = buildProblem(HttpStatus.BAD_REQUEST, "Bad Request", "Missing request parameter", details);
+        return new ResponseEntity<>(pd, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<ApiError> handleMethodNotSupported(HttpRequestMethodNotSupportedException ex, WebRequest request) {
-        ApiError apiError = ApiError.builder()
-            .timestamp(LocalDateTime.now())
-            .status(HttpStatus.METHOD_NOT_ALLOWED.value())
-            .error("Method Not Allowed")
-            .message(ex.getMessage())
-            .build();
-        return new ResponseEntity<>(apiError, HttpStatus.METHOD_NOT_ALLOWED);
+    public ResponseEntity<ProblemDetail> handleMethodNotSupported(HttpRequestMethodNotSupportedException ex, WebRequest request) {
+        ProblemDetail pd = buildProblem(HttpStatus.METHOD_NOT_ALLOWED, "Method Not Allowed", ex.getMessage(), null);
+        return new ResponseEntity<>(pd, HttpStatus.METHOD_NOT_ALLOWED);
     }
 
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
-    public ResponseEntity<ApiError> handleMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex, WebRequest request) {
-        ApiError apiError = ApiError.builder()
-            .timestamp(LocalDateTime.now())
-            .status(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value())
-            .error("Unsupported Media Type")
-            .message(ex.getMessage())
-            .build();
-        return new ResponseEntity<>(apiError, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+    public ResponseEntity<ProblemDetail> handleMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex, WebRequest request) {
+        ProblemDetail pd = buildProblem(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Unsupported Media Type", ex.getMessage(), null);
+        return new ResponseEntity<>(pd, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)
-    public ResponseEntity<ApiError> handleNoHandlerFound(NoHandlerFoundException ex, WebRequest request) {
-        ApiError apiError = ApiError.builder()
-            .timestamp(LocalDateTime.now())
-            .status(HttpStatus.NOT_FOUND.value())
-            .error("Not Found")
-            .message("No handler found for " + ex.getHttpMethod() + " " + ex.getRequestURL())
-            .build();
-        return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
+    public ResponseEntity<ProblemDetail> handleNoHandlerFound(NoHandlerFoundException ex, WebRequest request) {
+        ProblemDetail pd = buildProblem(HttpStatus.NOT_FOUND, "Not Found", "No handler found for " + ex.getHttpMethod() + " " + ex.getRequestURL(), null);
+        return new ResponseEntity<>(pd, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<ApiError> handleDataIntegrity(DataIntegrityViolationException ex, WebRequest request) {
+    public ResponseEntity<ProblemDetail> handleDataIntegrity(DataIntegrityViolationException ex, WebRequest request) {
         log.debug("Data integrity violation", ex);
-        ApiError apiError = ApiError.builder()
-            .timestamp(LocalDateTime.now())
-            .status(HttpStatus.CONFLICT.value())
-            .error("Conflict")
-            .message("Data integrity violation")
-            .build();
-        return new ResponseEntity<>(apiError, HttpStatus.CONFLICT);
+        ProblemDetail pd = buildProblem(HttpStatus.CONFLICT, "Conflict", "Data integrity violation", null);
+        return new ResponseEntity<>(pd, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(DuplicateKeyException.class)
-    public ResponseEntity<ApiError> handleDuplicateKey(DuplicateKeyException ex, WebRequest request) {
+    public ResponseEntity<ProblemDetail> handleDuplicateKey(DuplicateKeyException ex, WebRequest request) {
         log.debug("Duplicate key", ex);
-        ApiError apiError = ApiError.builder()
-            .timestamp(LocalDateTime.now())
-            .status(HttpStatus.CONFLICT.value())
-            .error("Conflict")
-            .message("Duplicate key violates unique constraint")
-            .build();
-        return new ResponseEntity<>(apiError, HttpStatus.CONFLICT);
+        ProblemDetail pd = buildProblem(HttpStatus.CONFLICT, "Conflict", "Duplicate key violates unique constraint", null);
+        return new ResponseEntity<>(pd, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
-    public ResponseEntity<ApiError> handleEmptyResult(EmptyResultDataAccessException ex, WebRequest request) {
-        ApiError apiError = ApiError.builder()
-            .timestamp(LocalDateTime.now())
-            .status(HttpStatus.NOT_FOUND.value())
-            .error("Not Found")
-            .message(ex.getMessage())
-            .build();
-        return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
+    public ResponseEntity<ProblemDetail> handleEmptyResult(EmptyResultDataAccessException ex, WebRequest request) {
+        ProblemDetail pd = buildProblem(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), null);
+        return new ResponseEntity<>(pd, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ApiError> handleNotFound(NotFoundException ex, WebRequest request) {
+    public ResponseEntity<ProblemDetail> handleNotFound(NotFoundException ex, WebRequest request) {
         Map<String, String> details = new HashMap<>();
         details.put("errorCode", ex.getErrorCode());
-        ApiError apiError = ApiError.builder()
-            .timestamp(LocalDateTime.now())
-            .status(HttpStatus.NOT_FOUND.value())
-            .error("Not Found")
-            .message(ex.getMessage())
-            .details(details)
-            .build();
-        return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
+        ProblemDetail pd = buildProblem(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), details);
+        pd.setProperty("errorCode", ex.getErrorCode());
+        return new ResponseEntity<>(pd, HttpStatus.NOT_FOUND);
     }
 
     /**
      * Handle IllegalArgumentException.
      */
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ApiError> handleIllegalArgumentException(
+    public ResponseEntity<ProblemDetail> handleIllegalArgumentException(
             IllegalArgumentException ex,
             WebRequest request
     ) {
-        ApiError apiError = ApiError.builder()
-            .timestamp(LocalDateTime.now())
-            .status(HttpStatus.BAD_REQUEST.value())
-            .error("Bad Request")
-            .message(ex.getMessage())
-            .build();
+        ProblemDetail pd = buildProblem(HttpStatus.BAD_REQUEST, "Bad Request", ex.getMessage(), null);
 
-        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(pd, HttpStatus.BAD_REQUEST);
     }
 
     /**
      * Handle general exceptions.
      */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiError> handleGeneralException(
+    public ResponseEntity<ProblemDetail> handleGeneralException(
             Exception ex,
             WebRequest request
     ) {
         // Detect common security exceptions by class name at runtime (no compile-time dependency on Spring Security)
         String secType = findSecurityExceptionType(ex);
         if ("ACCESS_DENIED".equals(secType)) {
-            ApiError apiError = ApiError.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.FORBIDDEN.value())
-                .error("Forbidden")
-                .message(ex.getMessage() != null ? ex.getMessage() : "Access is denied")
-                .build();
-            return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
+            ProblemDetail pd = buildProblem(HttpStatus.FORBIDDEN, "Forbidden", ex.getMessage() != null ? ex.getMessage() : "Access is denied", null);
+            return new ResponseEntity<>(pd, HttpStatus.FORBIDDEN);
         }
         if ("AUTHENTICATION".equals(secType)) {
-            ApiError apiError = ApiError.builder()
-                .timestamp(LocalDateTime.now())
-                .status(HttpStatus.UNAUTHORIZED.value())
-                .error("Unauthorized")
-                .message(ex.getMessage() != null ? ex.getMessage() : "Authentication required")
-                .build();
-            return new ResponseEntity<>(apiError, HttpStatus.UNAUTHORIZED);
+            ProblemDetail pd = buildProblem(HttpStatus.UNAUTHORIZED, "Unauthorized", ex.getMessage() != null ? ex.getMessage() : "Authentication required", null);
+            return new ResponseEntity<>(pd, HttpStatus.UNAUTHORIZED);
         }
 
         // Fallback: internal server error
         log.warn("{}: {}", ex.getClass().getName(), ex.getMessage());
-        ApiError apiError = ApiError.builder()
-            .timestamp(LocalDateTime.now())
-            .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-            .error("Internal Server Error")
-            .message("An unexpected error occurred")
-            .build();
+        ProblemDetail pd = buildProblem(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", "An unexpected error occurred", null);
 
-        return new ResponseEntity<>(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(pd, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -287,19 +206,5 @@ public class GlobalExceptionHandler {
         }
         return null;
     }
-
-    /**
-     * API Error response structure.
-     */
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class ApiError {
-        private LocalDateTime timestamp;
-        private int status;
-        private String error;
-        private String message;
-        private Map<String, String> details;
-    }
 }
+
