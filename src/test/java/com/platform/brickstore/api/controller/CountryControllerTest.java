@@ -79,6 +79,11 @@ class CountryControllerTest {
             .build();
     }
 
+    @SuppressWarnings("unchecked")
+    private static <T> org.hamcrest.Matcher<? super Object> asObject(org.hamcrest.Matcher<T> m) {
+        return (org.hamcrest.Matcher<? super Object>) m;
+    }
+
     @Test
     @DisplayName("GET /api/v1/countries - Get all countries")
     void testGetAllCountries() throws Exception {
@@ -101,9 +106,9 @@ class CountryControllerTest {
             .andExpect(status().isOk())
             .andExpectAll(
                 jsonPath("$", hasSize(2)),
-                jsonPath("$[0].pid", notNullValue()),
-                jsonPath("$[0].name", is("United States")),
-                jsonPath("$[1].name", is("Canada"))
+                jsonPath("$[0].pid", asObject(notNullValue())),
+                jsonPath("$[0].name", asObject(is("United States"))),
+                jsonPath("$[1].name", asObject(is("Canada")))
             );
     }
 
@@ -116,9 +121,9 @@ class CountryControllerTest {
         // Act & Assert
         mockMvc.perform(get("/api/v1/countries/{pid}", testPid))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.pid", is(testPid)))
-            .andExpect(jsonPath("$.name", is("United States")))
-            .andExpect(jsonPath("$.iso2", is("US")));
+            .andExpect(jsonPath("$.pid", asObject(is(testPid))))
+            .andExpect(jsonPath("$.name", asObject(is("United States"))))
+            .andExpect(jsonPath("$.iso2", asObject(is("US"))));
     }
 
     @Test
@@ -132,8 +137,8 @@ class CountryControllerTest {
         // Act & Assert
         mockMvc.perform(get("/api/v1/countries/{pid}", nonExistentPid))
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$.error", is("Not Found")))
-            .andExpect(jsonPath("$.details.errorCode", is("COUNTRY_NOT_FOUND")));
+            .andExpect(jsonPath("$.error", asObject(is("Not Found"))))
+            .andExpect(jsonPath("$.details.errorCode", asObject(is("COUNTRY_NOT_FOUND"))));
     }
 
     @Test
@@ -165,9 +170,9 @@ class CountryControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request)))
             .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.pid", notNullValue()))
-            .andExpect(jsonPath("$.name", is("Mexico")))
-            .andExpect(jsonPath("$.iso2", is("MX")));
+            .andExpect(jsonPath("$.pid", asObject(notNullValue())))
+            .andExpect(jsonPath("$.name", asObject(is("Mexico"))))
+            .andExpect(jsonPath("$.iso2", asObject(is("MX"))));
     }
 
     @Test
@@ -218,8 +223,8 @@ class CountryControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request)))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.pid", is(testPid)))
-            .andExpect(jsonPath("$.name", is("United States of America")));
+            .andExpect(jsonPath("$.pid", asObject(is(testPid))))
+            .andExpect(jsonPath("$.name", asObject(is("United States of America"))));
     }
 
     @Test
@@ -248,8 +253,8 @@ class CountryControllerTest {
         // Act & Assert
         mockMvc.perform(delete("/api/v1/countries/{pid}", nonExistentPid))
             .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$.error", is("Not Found")))
-            .andExpect(jsonPath("$.details.errorCode", is("COUNTRY_NOT_FOUND")));
+            .andExpect(jsonPath("$.error", asObject(is("Not Found"))))
+            .andExpect(jsonPath("$.details.errorCode", asObject(is("COUNTRY_NOT_FOUND"))));
 
         verify(countryService, never()).delete(any());
     }
