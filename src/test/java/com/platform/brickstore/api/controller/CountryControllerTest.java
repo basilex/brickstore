@@ -1,5 +1,6 @@
 package com.platform.brickstore.api.controller;
 
+import static com.platform.brickstore.test.MatchersHelper.asObject;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
@@ -79,10 +80,7 @@ class CountryControllerTest {
             .build();
     }
 
-    @SuppressWarnings("unchecked")
-    private static <T> org.hamcrest.Matcher<? super Object> asObject(org.hamcrest.Matcher<T> m) {
-        return (org.hamcrest.Matcher<? super Object>) m;
-    }
+    
 
     @Test
     @DisplayName("GET /api/v1/countries - Get all countries")
