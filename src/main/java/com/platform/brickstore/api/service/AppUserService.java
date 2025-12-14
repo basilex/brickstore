@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.platform.brickstore.api.domain.entity.AppUser;
+import com.platform.brickstore.api.exception.ErrorCode;
 import com.platform.brickstore.api.exception.NotFoundException;
 import com.platform.brickstore.api.repository.AppUserRepository;
 import com.platform.brickstore.api.utility.UUIDv7;
@@ -22,7 +23,7 @@ public class AppUserService {
 
     public AppUser getByPid(String pid) {
         return appUserRepository.findByPid(pid)
-            .orElseThrow(() -> new NotFoundException("User not found with pid: " + pid, null));
+            .orElseThrow(() -> new NotFoundException("User not found with pid: " + pid, ErrorCode.USER_NOT_FOUND));
     }
 
     public List<AppUser> getAll() {
