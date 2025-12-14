@@ -32,6 +32,8 @@ public class ProblemErrorAttributes implements ErrorAttributes {
 
         attrs.put("timestamp", Instant.now().toString());
         attrs.put("status", status);
+        // RFC7807 'type' - keep as about:blank for now
+        attrs.put("type", "about:blank");
         attrs.put("error", req.getAttribute(RequestDispatcher.ERROR_MESSAGE) != null ? String.valueOf(req.getAttribute(RequestDispatcher.ERROR_MESSAGE)) : org.springframework.http.HttpStatus.resolve(status) != null ? org.springframework.http.HttpStatus.resolve(status).getReasonPhrase() : "Error");
 
         Throwable ex = getError(webRequest);
@@ -41,10 +43,15 @@ public class ProblemErrorAttributes implements ErrorAttributes {
         Object path = webRequest.getAttribute(RequestDispatcher.ERROR_REQUEST_URI, WebRequest.SCOPE_REQUEST);
         attrs.put("path", path != null ? String.valueOf(path) : req.getRequestURI());
 
-        // preserve requestId if present
+        // preserve requestId if present and set instance URN
         Object requestId = req.getAttribute("requestId");
         if (requestId == null) requestId = req.getHeader("X-Request-Id");
-        if (requestId != null) attrs.put("requestId", String.valueOf(requestId));
+        if (requestId != null) {
+            String rid = String.valueOf(requestId);
+            attrs.put("requestId", rid);
+            // RFC7807 'instance' - use urn:uuid:<requestId> when present
+            attrs.put("instance", "urn:uuid:" + rid);
+        }
 
         if (ex instanceof NotFoundException nf) {
             Map<String, String> details = Map.of("errorCode", nf.getErrorCode());
