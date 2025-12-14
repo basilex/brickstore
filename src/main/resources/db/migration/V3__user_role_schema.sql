@@ -156,11 +156,11 @@ insert into rbac_role_privilege (id, role_id, privilege_id)
 
 do $$
 declare
+    v_role_id varchar(64);
     v_user_id varchar(64) := uuidv7();
     v_user_pid varchar(64) := uuidv7();
     v_profile_id varchar(64) := uuidv7();
     v_profile_pid varchar(64) := uuidv7();
-    v_role_id varchar(64);
 begin
     select id into v_role_id from rbac_role where name = 'system';
  

@@ -14,9 +14,11 @@ public class TestFlywayConfig {
     public Flyway testFlyway(DataSource dataSource) {
         return Flyway.configure()
             .dataSource(dataSource)
-            .locations("classpath:db/migration")
+            // Use a test-only migration location that contains a minimal schema without seed data
+            .locations("classpath:db/test-migration")
             .baselineOnMigrate(true)
-            .validateOnMigrate(true)
+            // Disable validation on startup for tests: tests call clean() and migrate() explicitly
+            .validateOnMigrate(false)
             .cleanDisabled(false)
             .load();
     }

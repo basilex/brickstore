@@ -33,6 +33,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.security:spring-security-crypto")
 	implementation("org.flywaydb:flyway-core")
 	implementation("org.flywaydb:flyway-database-postgresql")
 	compileOnly("org.projectlombok:lombok")
@@ -40,6 +41,9 @@ dependencies {
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+    // H2 for in-memory tests
+    testRuntimeOnly("com.h2database:h2")
 }
 
 tasks.withType<Test> {
