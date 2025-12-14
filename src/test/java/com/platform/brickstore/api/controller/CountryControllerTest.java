@@ -19,7 +19,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collection;
 
+import org.hamcrest.Matcher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -100,7 +102,7 @@ class CountryControllerTest {
         mockMvc.perform(get("/api/v1/countries"))
             .andExpect(status().isOk())
             .andExpectAll(
-                jsonPath("$", hasSize(2)),
+                jsonPath("$", (Matcher<? super Collection<?>>) hasSize(2)),
                 jsonPath("$[0].pid", notNullValue()),
                 jsonPath("$[0].name", is("United States")),
                 jsonPath("$[1].name", is("Canada"))
