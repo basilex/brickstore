@@ -35,7 +35,15 @@ public class ProblemErrorAttributes implements ErrorAttributes {
         // RFC7807 'type' - default to about:blank; may be overridden below for domain errors
         String type = "about:blank";
         attrs.put("type", type);
-        attrs.put("error", req.getAttribute(RequestDispatcher.ERROR_MESSAGE) != null ? String.valueOf(req.getAttribute(RequestDispatcher.ERROR_MESSAGE)) : org.springframework.http.HttpStatus.resolve(status) != null ? org.springframework.http.HttpStatus.resolve(status).getReasonPhrase() : "Error");
+        Object errorAttr = req.getAttribute(RequestDispatcher.ERROR_MESSAGE);
+        String errorText = null;
+        if (errorAttr != null) {
+            errorText = String.valueOf(errorAttr);
+        } else {
+            org.springframework.http.HttpStatus resolved = org.springframework.http.HttpStatus.resolve(status);
+            errorText = resolved != null ? resolved.getReasonPhrase() : "Error";
+        }
+        attrs.put("error", errorText);
 
         Throwable ex = getError(webRequest);
         String message = ex != null && ex.getMessage() != null ? ex.getMessage() : String.valueOf(webRequest.getAttribute(RequestDispatcher.ERROR_MESSAGE, WebRequest.SCOPE_REQUEST));

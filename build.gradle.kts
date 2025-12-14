@@ -33,17 +33,17 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-web")
-	// OpenAPI (Swagger UI) starter
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0")
 	implementation("org.springframework.security:spring-security-crypto")
 	implementation("org.flywaydb:flyway-core")
 	implementation("org.flywaydb:flyway-database-postgresql")
+
 	compileOnly("org.projectlombok:lombok")
 	runtimeOnly("org.postgresql:postgresql")
 	annotationProcessor("org.projectlombok:lombok")
+
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
-		// JetBrains annotations used in test helpers to aid IDE nullness checking
-		testImplementation("org.jetbrains:annotations:24.0.1")
+	testImplementation("org.jetbrains:annotations:24.0.1")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     // H2 for in-memory tests
