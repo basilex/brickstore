@@ -14,6 +14,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import com.platform.brickstore.api.domain.entity.Country;
 import com.platform.brickstore.api.domain.entity.Currency;
@@ -25,6 +26,7 @@ import com.platform.brickstore.api.utility.UUIDv7;
  * Integration tests for CountryMapper.
  */
 @SpringBootTest
+@ActiveProfiles("test")
 @DisplayName("CountryMapper Tests")
 class CountryMapperTest {
 

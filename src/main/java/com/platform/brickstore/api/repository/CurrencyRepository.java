@@ -134,10 +134,10 @@ public class CurrencyRepository {
     /**
      * Get all currencies.
      */
-    // public List<Currency> findAll() {
-    //     return jdbcClient.sql(SQL_FIND_ALL)
-    //         .query(Currency.class).list();
-    // }
+    public List<Currency> findAll() {
+        return jdbcClient.sql(SQL_FIND_ALL)
+            .query(Currency.class).list();
+    }
 
     /**
      * Get all currencies with pagination.

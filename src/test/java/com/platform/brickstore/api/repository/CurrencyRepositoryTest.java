@@ -109,11 +109,11 @@ class CurrencyRepositoryTest {
         currencyRepository.save(testCurrency);
 
         // Act
-        Optional<Currency> found = currencyRepository.findByIso3("USD");
+        Optional<Currency> found = currencyRepository.findByIso3(testCurrency.getIso3());
 
         // Assert
         assertTrue(found.isPresent());
-        assertEquals("US Dollar", found.get().getName());
+        assertEquals(testCurrency.getName(), found.get().getName());
     }
 
     @Test
@@ -123,11 +123,11 @@ class CurrencyRepositoryTest {
         currencyRepository.save(testCurrency);
 
         // Act
-        Optional<Currency> found = currencyRepository.findByName("US Dollar");
+        Optional<Currency> found = currencyRepository.findByName(testCurrency.getName());
 
         // Assert
         assertTrue(found.isPresent());
-        assertEquals((short) 840, found.get().getCode());
+        assertEquals(testCurrency.getCode(), found.get().getCode());
     }
 
     @Test

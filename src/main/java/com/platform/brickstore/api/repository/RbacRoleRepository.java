@@ -21,6 +21,9 @@ public class RbacRoleRepository {
     private static final String SQL_INSERT = "INSERT INTO rbac_role (id, pid, name, description, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)";
     private static final String SQL_UPDATE = "UPDATE rbac_role SET name = ?, description = ?, updated_at = ? WHERE pid = ?";
     private static final String SQL_DELETE = "DELETE FROM rbac_role WHERE pid = ?";
+    private static final String SQL_FIND_ID_BY_PID = "SELECT id FROM rbac_role WHERE pid = ?";
+    private static final String SQL_EXISTS_BY_PID = "SELECT count(1) FROM rbac_role WHERE pid = ?";
+    private static final String SQL_EXISTS_BY_NAME = "SELECT count(1) FROM rbac_role WHERE name = ?";
 
     public Optional<RbacRole> findByPid(String pid) {
         return jdbcClient.sql(SQL_FIND_BY_PID).param(pid)
@@ -34,6 +37,18 @@ public class RbacRoleRepository {
 
     public List<RbacRole> findAll() {
         return jdbcClient.sql(SQL_FIND_ALL).query(RbacRole.class).list();
+    }
+
+    public Optional<String> findIdByPid(String pid) {
+        return jdbcClient.sql(SQL_FIND_ID_BY_PID).param(pid).query(String.class).optional();
+    }
+
+    public boolean existsByPid(String pid) {
+        return jdbcClient.sql(SQL_EXISTS_BY_PID).param(pid).query(Integer.class).optional().map(i -> i > 0).orElse(false);
+    }
+
+    public boolean existsByName(String name) {
+        return jdbcClient.sql(SQL_EXISTS_BY_NAME).param(name).query(Integer.class).optional().map(i -> i > 0).orElse(false);
     }
 
     public void save(RbacRole role) {
