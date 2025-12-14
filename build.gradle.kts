@@ -42,6 +42,8 @@ dependencies {
 	runtimeOnly("org.postgresql:postgresql")
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+		// JetBrains annotations used in test helpers to aid IDE nullness checking
+		testImplementation("org.jetbrains:annotations:24.0.1")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     // H2 for in-memory tests
