@@ -3,6 +3,8 @@ package com.platform.brickstore.api.repository;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
+import com.platform.brickstore.api.utility.UUIDv7;
+
 import lombok.AllArgsConstructor;
 
 @Repository
@@ -14,10 +16,14 @@ public class RbacUserRoleRepository {
     private static final String SQL_DELETE = "DELETE FROM rbac_user_role WHERE user_id = ? AND role_id = ?";
 
     public void assignRole(String userId, String roleId, java.time.LocalDateTime createdAt) {
-        jdbcClient.sql(SQL_INSERT).params(java.util.UUID.randomUUID().toString(), userId, roleId, createdAt).update();
+        jdbcClient.sql(SQL_INSERT)
+        .params(UUIDv7.generate(), userId, roleId, createdAt)
+        .update();
     }
 
     public void removeRole(String userId, String roleId) {
-        jdbcClient.sql(SQL_DELETE).params(userId, roleId).update();
+        jdbcClient.sql(SQL_DELETE)
+        .params(userId, roleId)
+        .update();
     }
 }

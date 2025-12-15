@@ -9,7 +9,7 @@ services:
     command: ./gradlew bootRun --no-daemon
     environment:
       - SPRING_PROFILES_ACTIVE=dev
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/brickstore
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/brickstore_dev
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
     ports:
@@ -20,7 +20,7 @@ services:
   db:
     image: postgres:16
     environment:
-      POSTGRES_DB: brickstore
+      POSTGRES_DB: brickstore_dev
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
