@@ -25,6 +25,7 @@ help:
 	@echo "  up-dev-open-bg Start dev stack and open Swagger UI in background (non-blocking)"
 	@echo "  Defaults: OPEN_SWAGGER_URL=$(OPEN_SWAGGER_URL), OPEN_SWAGGER_TIMEOUT=$(OPEN_SWAGGER_TIMEOUT)s"
 	@echo "  show-defaults Print default OPEN_SWAGGER_* values"
+	@echo "  cleanup-vscode-storage  Rotate/delete large files in VS Code globalStorage (macOS)"
 
 up:
 	$(DC) -f docker-compose.yml up -d --build
@@ -81,3 +82,12 @@ up-dev-open-bg:
 show-defaults:
 	@echo "OPEN_SWAGGER_URL=$(OPEN_SWAGGER_URL)"
 	@echo "OPEN_SWAGGER_TIMEOUT=$(OPEN_SWAGGER_TIMEOUT)"
+
+cleanup-vscode-storage:
+	@echo "Running VS Code globalStorage cleanup (macOS only)..."
+	@if [ "$$(uname -s)" = "Darwin" ]; then \
+		./scripts/cleanup-vscode-globalstorage.sh; \
+		echo "If you prefer deletion instead of moving, run: DELETE=1 ./scripts/cleanup-vscode-globalstorage.sh"; \
+	else \
+		echo "cleanup-vscode-storage is supported only on macOS"; exit 1; \
+	fi
