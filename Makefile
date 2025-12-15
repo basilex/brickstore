@@ -1,6 +1,6 @@
 DC := docker compose
 
-.PHONY: help up up-dev down down-dev rebuild rebuild-dev logs logs-dev ps build build-dev shell-app shell-db exec-app open-swagger up-dev-open
+.PHONY: help up up-dev down down-dev rebuild rebuild-dev logs logs-dev ps build build-dev shell-app shell-db exec-app open-swagger up-dev-open up-dev-open-bg
 
 help:
 	@echo "Usage: make <target>"
@@ -18,6 +18,7 @@ help:
 	@echo "  shell-db     Open a psql shell into the 'db' container"
 	@echo "  open-swagger Open the Swagger UI after the OpenAPI endpoint becomes available"
 	@echo "  up-dev-open   Start dev stack and open Swagger UI when ready"
+	@echo "  up-dev-open-bg Start dev stack and open Swagger UI in background (non-blocking)"
 
 up:
 	$(DC) -f docker-compose.yml up -d --build
@@ -66,3 +67,7 @@ open-swagger:
 up-dev-open:
 	@$(MAKE) up-dev
 	@$(MAKE) open-swagger
+
+up-dev-open-bg:
+	@$(MAKE) up-dev
+	@$(MAKE) open-swagger &

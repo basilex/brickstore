@@ -62,6 +62,40 @@ Open the Swagger UI in your default browser after the stack is up (waits for `/v
 make open-swagger
 ```
 
+Non-blocking helper
+
+- There's also a non-blocking variant `make up-dev-open-bg` which starts the dev stack and launches the `open-swagger` script in the background. This returns control to your shell immediately while the script polls the OpenAPI endpoint and opens Swagger when it's ready.
+
+Usage examples
+
+```
+make up-dev-open       # starts dev stack, opens Swagger and waits until Swagger is opened
+make up-dev-open-bg    # starts dev stack and opens Swagger in background (returns immediately)
+```
+
+Notes
+
+- The project exposes OpenAPI at `/v3/api-docs` and the Swagger UI at `/swagger-ui/index.html` when the app is running inside the compose stack.
+- `make open-swagger` runs `scripts/open-swagger.sh` which polls the OpenAPI endpoint and opens the Swagger UI in your default browser when available. Defaults: `http://localhost:8081` and a 60s timeout.
+- You can run the script directly with a custom base URL or timeout:
+
+```
+./scripts/open-swagger.sh http://localhost:8081 120
+```
+
+Changing the host port
+
+- If your machine already uses host port `8081`, you can either stop that process or change the host-side mapping for the `app` service in `docker-compose.dev.yml` (host:container). Example change to use `8082` on the host:
+
+```yaml
+services:
+	app:
+		ports:
+			- "8082:8081"
+```
+
+- Alternatively, make the `docker-compose` port configurable by using an env var in the compose file and export `HOST_PORT` before `make up-dev`.
+
 Notes
 
 - The `dev` compose file mounts your project directory into the container and shares `~/.gradle` so incremental Gradle runs are faster. It runs `./gradlew bootRun` by default.
