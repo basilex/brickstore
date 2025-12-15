@@ -23,6 +23,7 @@ help:
 	@echo "  open-swagger Open the Swagger UI after the OpenAPI endpoint becomes available"
 	@echo "  up-dev-open   Start dev stack and open Swagger UI when ready"
 	@echo "  up-dev-open-bg Start dev stack and open Swagger UI in background (non-blocking)"
+	@echo "  Defaults: OPEN_SWAGGER_URL=$(OPEN_SWAGGER_URL), OPEN_SWAGGER_TIMEOUT=$(OPEN_SWAGGER_TIMEOUT)s"
 
 up:
 	$(DC) -f docker-compose.yml up -d --build
