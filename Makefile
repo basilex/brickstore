@@ -1,5 +1,9 @@
 DC := docker compose
 
+# Defaults for opening the Swagger UI
+OPEN_SWAGGER_URL ?= http://localhost:8081
+OPEN_SWAGGER_TIMEOUT ?= 60
+
 .PHONY: help up up-dev down down-dev rebuild rebuild-dev logs logs-dev ps build build-dev shell-app shell-db exec-app open-swagger up-dev-open up-dev-open-bg
 
 help:
@@ -62,7 +66,7 @@ exec-app:
 	$(DC) -f docker-compose.dev.yml exec app sh -c "$(CMD)"
 
 open-swagger:
-	@./scripts/open-swagger.sh || (echo "Failed to open Swagger UI; ensure the app is running and reachable" >&2; exit 1)
+	@./scripts/open-swagger.sh "$(OPEN_SWAGGER_URL)" "$(OPEN_SWAGGER_TIMEOUT)" || (echo "Failed to open Swagger UI; ensure the app is running and reachable" >&2; exit 1)
 
 up-dev-open:
 	@$(MAKE) up-dev

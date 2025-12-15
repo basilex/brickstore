@@ -90,6 +90,8 @@ docker compose -f docker-compose.dev.yml up --build
 
 This starts dependent services defined in `docker-compose.dev.yml` and the application image.
 
+See `docs/Docker.md` for a fuller guide including Makefile helpers (`make up-dev`, `make open-swagger`, `make up-dev-open`, etc.).
+
 ## Configuration and profiles
 
 - `application.yaml` contains shared configuration.
