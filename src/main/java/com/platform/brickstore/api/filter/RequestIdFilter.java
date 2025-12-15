@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.slf4j.MDC;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -25,9 +26,9 @@ public class RequestIdFilter extends OncePerRequestFilter {
     public static final String ATTR = "requestId";
     public static final String HEADER = "X-Request-Id";
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+        @Override
+        protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain) throws ServletException, IOException {
         String reqId = request.getHeader(HEADER);
         if (reqId == null || reqId.isBlank()) {
             reqId = UUIDv7.generate().toString();
