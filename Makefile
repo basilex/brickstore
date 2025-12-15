@@ -85,9 +85,10 @@ show-defaults:
 
 cleanup-vscode-storage:
 	@echo "Running VS Code globalStorage cleanup (macOS only)..."
-	@if [ "$$(uname -s)" = "Darwin" ]; then \
+	@echo "Hint: to skip the interactive prompt set FORCE=1. To delete instead of move set DELETE=1."
+	@if [ "$(uname -s)" = "Darwin" ]; then \
 		./scripts/cleanup-vscode-globalstorage.sh; \
-		echo "If you prefer deletion instead of moving, run: DELETE=1 ./scripts/cleanup-vscode-globalstorage.sh"; \
+		echo "If you prefer deletion instead of moving, run: DELETE=1 FORCE=1 ./scripts/cleanup-vscode-globalstorage.sh"; \
 	else \
 		echo "cleanup-vscode-storage is supported only on macOS"; exit 1; \
 	fi

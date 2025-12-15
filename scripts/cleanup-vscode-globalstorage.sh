@@ -20,10 +20,12 @@ fi
 THRESHOLD_BYTES=${THRESHOLD_BYTES:-5242880}
 DELETE=${DELETE:-0}
 BACKUP_DIR=${BACKUP_DIR:-"$HOME/Desktop/vscode-globalstorage-backup-$(date +%Y%m%dT%H%M%S)"}
+FORCE=${FORCE:-0}
 
 echo "GlobalStorage dir: $GS_DIR"
 echo "Threshold (bytes): $THRESHOLD_BYTES"
 echo "Delete mode: $DELETE"
+echo "Force (skip prompt): $FORCE"
 
 if [ ! -d "$GS_DIR" ]; then
   echo "GlobalStorage directory not found: $GS_DIR" >&2
@@ -32,6 +34,26 @@ fi
 
 mkdir -p "$BACKUP_DIR"
 found=0
+
+# Interactive confirmation unless FORCE=1
+if [ "$FORCE" != "1" ]; then
+  echo
+  echo "The script will move files larger than ${THRESHOLD_BYTES} bytes from:" \
+       "$GS_DIR"
+  if [ "$DELETE" = "1" ]; then
+    echo "Mode: DELETE (files will be permanently removed)."
+  else
+    echo "Mode: MOVE (files will be moved to: $BACKUP_DIR)."
+  fi
+  echo
+  read -r -p "Proceed? (y/N): " ans || true
+  case "$ans" in
+    [Yy]|[Yy][Ee][Ss])
+      echo "Continuing..." ;;
+    *)
+      echo "Aborting." ; exit 0 ;;
+  esac
+fi
 
 # Find files larger than threshold (BSD find on macOS supports 'c' for bytes)
 while IFS= read -r -d '' f; do
