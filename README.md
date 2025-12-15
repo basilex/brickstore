@@ -92,6 +92,24 @@ This starts dependent services defined in `docker-compose.dev.yml` and the appli
 
 See `docs/Docker.md` for a fuller guide including Makefile helpers (`make up-dev`, `make open-swagger`, `make up-dev-open`, etc.).
 
+VS Code troubleshooting
+
+If VS Code becomes slow or the integrated terminal behaves erratically, large state files in VS Code's `globalStorage` can be a common cause (for example heavy Copilot/extension caches). This repository includes a safe helper to rotate or remove large files:
+
+- Interactive (moves files >5MB to a timestamped backup on your Desktop):
+
+```
+make cleanup-vscode-storage
+```
+
+- Non-interactive delete (dangerous — use with care):
+
+```
+DELETE=1 FORCE=1 ./scripts/cleanup-vscode-globalstorage.sh
+```
+
+See `scripts/cleanup-vscode-globalstorage.sh` for options (`THRESHOLD_BYTES`, `BACKUP_DIR`, `DELETE`, `FORCE`).
+
 ## Configuration and profiles
 
 - `application.yaml` contains shared configuration.
