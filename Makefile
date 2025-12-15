@@ -4,7 +4,7 @@ DC := docker compose
 OPEN_SWAGGER_URL ?= http://localhost:8081
 OPEN_SWAGGER_TIMEOUT ?= 60
 
-.PHONY: help up up-dev down down-dev rebuild rebuild-dev logs logs-dev ps build build-dev shell-app shell-db exec-app open-swagger up-dev-open up-dev-open-bg
+.PHONY: help up up-dev down down-dev rebuild rebuild-dev logs logs-dev ps build build-dev shell-app shell-db exec-app open-swagger up-dev-open up-dev-open-bg show-defaults
 
 help:
 	@echo "Usage: make <target>"
@@ -24,6 +24,7 @@ help:
 	@echo "  up-dev-open   Start dev stack and open Swagger UI when ready"
 	@echo "  up-dev-open-bg Start dev stack and open Swagger UI in background (non-blocking)"
 	@echo "  Defaults: OPEN_SWAGGER_URL=$(OPEN_SWAGGER_URL), OPEN_SWAGGER_TIMEOUT=$(OPEN_SWAGGER_TIMEOUT)s"
+	@echo "  show-defaults Print default OPEN_SWAGGER_* values"
 
 up:
 	$(DC) -f docker-compose.yml up -d --build
@@ -76,3 +77,7 @@ up-dev-open:
 up-dev-open-bg:
 	@$(MAKE) up-dev
 	@$(MAKE) open-swagger &
+
+show-defaults:
+	@echo "OPEN_SWAGGER_URL=$(OPEN_SWAGGER_URL)"
+	@echo "OPEN_SWAGGER_TIMEOUT=$(OPEN_SWAGGER_TIMEOUT)"

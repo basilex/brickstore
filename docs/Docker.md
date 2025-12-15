@@ -73,6 +73,21 @@ make up-dev-open       # starts dev stack, opens Swagger and waits until Swagger
 make up-dev-open-bg    # starts dev stack and opens Swagger in background (returns immediately)
 ```
 
+Print current defaults
+
+You can print the Makefile defaults for the Swagger helper with:
+
+```
+make show-defaults
+```
+
+Example output:
+
+```
+OPEN_SWAGGER_URL=http://localhost:8081
+OPEN_SWAGGER_TIMEOUT=60
+```
+
 Notes
 
 - The project exposes OpenAPI at `/v3/api-docs` and the Swagger UI at `/swagger-ui/index.html` when the app is running inside the compose stack.
