@@ -1,6 +1,6 @@
 DC := docker compose
 
-.PHONY: help up up-dev down down-dev rebuild rebuild-dev logs logs-dev ps build build-dev shell-app shell-db exec-app
+.PHONY: help up up-dev down down-dev rebuild rebuild-dev logs logs-dev ps build build-dev shell-app shell-db exec-app open-swagger
 
 help:
 	@echo "Usage: make <target>"
@@ -16,6 +16,7 @@ help:
 	@echo "  ps           List running compose services (uses production compose by default)"
 	@echo "  shell-app    Open a shell into the 'app' container (dev compose recommended)"
 	@echo "  shell-db     Open a psql shell into the 'db' container"
+	@echo "  open-swagger Open the Swagger UI after the OpenAPI endpoint becomes available"
 
 up:
 	$(DC) -f docker-compose.yml up -d --build
@@ -57,3 +58,6 @@ shell-db:
 exec-app:
 	# Run a command in the running app container. Usage: make exec-app CMD="./gradlew test"
 	$(DC) -f docker-compose.dev.yml exec app sh -c "$(CMD)"
+
+open-swagger:
+	@./scripts/open-swagger.sh || (echo "Failed to open Swagger UI; ensure the app is running and reachable" >&2; exit 1)
